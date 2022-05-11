@@ -11,12 +11,18 @@ export class AuthGuard implements CanActivate {
 
     const token = request.headers.authorization;
 
-    const payload = validateToken(token);
+    try {
+      const payload = validateToken(token);
 
-    if (!payload) return false;
+      if (!payload) return false;
 
-    request.headers.user = payload;
+      request.headers.user = payload;
 
-    return true;
+      return true;
+    } catch (error) {
+      return false;
+    }
+
+    return false;
   }
 }
