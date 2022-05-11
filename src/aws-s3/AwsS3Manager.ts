@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 
 export default class AwsS3Manager {
-  static instance;
+  static instance: AWS.S3;
 
   static getInstance() {
     if (!this.instance) {

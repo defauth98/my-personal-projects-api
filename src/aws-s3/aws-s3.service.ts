@@ -24,9 +24,18 @@ export class AwsS3Service {
       Body: fileContent,
     };
 
-    console.log(params);
-
     const data = await s3Instance.upload(params).promise();
     return data.Location;
+  }
+
+  async removeFile(fileName) {
+    const s3Instance = AwsS3Manager.getInstance();
+
+    const params = {
+      Bucket: 'personal-projects-images',
+      Key: fileName,
+    };
+
+    await s3Instance.deleteObject(params).promise();
   }
 }
