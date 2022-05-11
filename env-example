@@ -1,0 +1,8 @@
+PORT=3333
+DATABASE_URL="mysql://root:docker@localhost:3306/personal-projects?schema=public"
+SECRET=
+SALT_ROUNDS=10
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_REGION=
+AWS_S3_BUCKET=

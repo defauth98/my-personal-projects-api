@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password_hash String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Project {
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  description    String           @unique
+  thumbnailPath  String           @unique
+  gifPath        String           @unique
+  link           String           @unique
+  repoLink       String           @unique
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  hidden         Boolean?         @default(false)
+  ProjectHasTags ProjectHasTags[]
+}
+
+model ProjectHasTags {
+  id         Int     @id @default(autoincrement())
+  project_id Int
+  tag_id     Int
+  project    Project @relation(fields: [project_id], references: [id])
+  tag        Tag     @relation(fields: [tag_id], references: [id])
+}
+
+model Tag {
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  ProjectHasTags ProjectHasTags[]
+}
