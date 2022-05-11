@@ -42,8 +42,6 @@ export class ProjectsController {
     },
     @Body() createProjectDto: CreateProjectDto,
   ) {
-    console.log('caiu aq');
-
     const projectsAlreadyExits = await this.prismaService.project.findFirst({
       where: {
         name: createProjectDto.name,
