@@ -24,14 +24,16 @@ export class ProjectsService {
   }
 
   async listAll() {
-    const projects = await this.prismaService.project.findMany();
+    const projects = await this.prismaService.project.findMany({
+      where: {
+        hidden: false,
+      },
+    });
 
     return projects;
   }
 
   async update(updateProjectDTO: UpdateProjectDTO, projectId: number) {
-    console.log(updateProjectDTO);
-
     const project = await this.prismaService.project.update({
       data: updateProjectDTO,
       where: {

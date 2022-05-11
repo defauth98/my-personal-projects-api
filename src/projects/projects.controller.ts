@@ -6,9 +6,9 @@ import {
   UploadedFiles,
   UseGuards,
   Get,
-  Patch,
   Param,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -140,6 +140,38 @@ export class ProjectsController {
       updateProjectDTO.thumbnailPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
     }
 
+    if (updateProjectDTO.hidden) {
+      updateProjectDTO.hidden =
+        String(updateProjectDTO.hidden) === 'true' ? true : false;
+    }
+
     return this.projectsService.update(updateProjectDTO, projectId);
+  }
+
+  @Delete(':id')
+  async deleteProject(@Param('id') id: string) {
+    const projectId = Number(id);
+
+    const projectsAlreadyExits = await this.prismaService.project.findFirst({
+      where: {
+        id: Number(projectId),
+      },
+    });
+
+    const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
+    const thumbnailFileName = projectsAlreadyExits.thumbnailPath.split('/')[3];
+
+    await this.awsS3Service.removeFile(gifFilename);
+    await this.awsS3Service.removeFile(thumbnailFileName);
+
+    await this.prismaService.project.delete({
+      where: {
+        id: projectId,
+      },
+    });
+
+    return {
+      message: 'project deleted',
+    };
   }
 }
