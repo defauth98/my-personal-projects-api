@@ -1,4 +1,4 @@
-service: my-personal-projects-api
+service: mppd-api 
 
 
 plugins:
