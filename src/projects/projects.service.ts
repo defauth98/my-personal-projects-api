@@ -39,6 +39,14 @@ export class ProjectsService {
     return projects;
   }
 
+  async geyById(id: number) {
+    return await this.prismaService.project.findFirst({
+      where: {
+        id,
+      },
+    });
+  }
+
   async update(updateProjectDTO: UpdateProjectDTO, projectId: number) {
     const project = await this.prismaService.project.update({
       data: updateProjectDTO,

@@ -3,4 +3,5 @@ export class CreateProjectDto {
   description: string;
   link: string;
   repoLink: string;
+  faviconLink: string;
 }

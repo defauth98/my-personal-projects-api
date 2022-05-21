@@ -6,4 +6,5 @@ export class UpdateProjectDTO {
   thumbnailPath?: string;
   gifPath?: string;
   hidden?: boolean;
+  faviconLink?: string;
 }

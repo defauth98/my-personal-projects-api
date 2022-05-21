@@ -28,6 +28,7 @@ model Project {
   gifPath        String
   link           String
   repoLink       String
+  faviconLink    String
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   hidden         Boolean?         @default(false)

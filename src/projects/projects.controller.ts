@@ -93,6 +93,11 @@ export class ProjectsController {
     return await this.projectsService.listAll();
   }
 
+  @Get(':id')
+  async getProjectByID(@Param('id') id: string) {
+    return await this.projectsService.geyById(Number(id));
+  }
+
   @Get('/visible')
   async getAllVisiblesProjects() {
     return await this.projectsService.listAllVisibleProjects();
