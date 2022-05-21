@@ -54,35 +54,48 @@ export class ProjectsController {
       };
     }
 
-    if (!files.gif || !files.thumbnail) {
-      return {
-        message: 'You must provide the thumbnail and gif',
-      };
+    if (process.env.NODE_ENV !== 'develop') {
+      if (!files.gif || !files.thumbnail) {
+        return {
+          message: 'You must provide the thumbnail and gif',
+        };
+      }
+
+      await this.awsS3Service.uploadFile(
+        files.thumbnail[0].buffer,
+        files.thumbnail[0].originalname,
+      );
+
+      await this.awsS3Service.uploadFile(
+        files.gif[0].buffer,
+        files.gif[0].originalname,
+      );
+
+      const thumbnailLink = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
+      const gifLink = `https://d1hx83ee0ymv6l.cloudfront.net/${files.gif[0].originalname}`;
+
+      return await this.projectsService.create(
+        createProjectDto,
+        thumbnailLink,
+        gifLink,
+      );
     }
-
-    await this.awsS3Service.uploadFile(
-      files.thumbnail[0].buffer,
-      files.thumbnail[0].originalname,
-    );
-
-    await this.awsS3Service.uploadFile(
-      files.gif[0].buffer,
-      files.gif[0].originalname,
-    );
-
-    const thumbnailLink = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
-    const gifLink = `https://d1hx83ee0ymv6l.cloudfront.net/${files.gif[0].originalname}`;
 
     return await this.projectsService.create(
       createProjectDto,
-      thumbnailLink,
-      gifLink,
+      'https://defauth98.github.io.',
+      'https://defauth98.github.io./',
     );
   }
 
   @Get()
   async getAllProjects() {
     return await this.projectsService.listAll();
+  }
+
+  @Get('/visible')
+  async getAllVisiblesProjects() {
+    return await this.projectsService.listAllVisibleProjects();
   }
 
   @Put(':id')
@@ -115,27 +128,30 @@ export class ProjectsController {
       };
     }
 
-    const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
-    if (files.gif && files.gif[0].originalname !== gifFilename) {
-      await this.awsS3Service.removeFile(gifFilename);
-      await this.awsS3Service.uploadFile(
-        files.gif[0].buffer,
-        files.gif[0].originalname,
-      );
-      updateProjectDTO.gifPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.gif[0].originalname}`;
-    }
+    if (process.env.NODE_ENV !== 'develop') {
+      const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
+      if (files.gif && files.gif[0].originalname !== gifFilename) {
+        await this.awsS3Service.removeFile(gifFilename);
+        await this.awsS3Service.uploadFile(
+          files.gif[0].buffer,
+          files.gif[0].originalname,
+        );
+        updateProjectDTO.gifPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.gif[0].originalname}`;
+      }
 
-    const thumbnailFileName = projectsAlreadyExits.thumbnailPath.split('/')[3];
-    if (
-      files.thumbnail &&
-      files.thumbnail[0].originalname !== thumbnailFileName
-    ) {
-      await this.awsS3Service.removeFile(thumbnailFileName);
-      await this.awsS3Service.uploadFile(
-        files.thumbnail[0].buffer,
-        files.thumbnail[0].originalname,
-      );
-      updateProjectDTO.thumbnailPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
+      const thumbnailFileName =
+        projectsAlreadyExits.thumbnailPath.split('/')[3];
+      if (
+        files.thumbnail &&
+        files.thumbnail[0].originalname !== thumbnailFileName
+      ) {
+        await this.awsS3Service.removeFile(thumbnailFileName);
+        await this.awsS3Service.uploadFile(
+          files.thumbnail[0].buffer,
+          files.thumbnail[0].originalname,
+        );
+        updateProjectDTO.thumbnailPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
+      }
     }
 
     if (updateProjectDTO.hidden) {
@@ -156,11 +172,14 @@ export class ProjectsController {
       },
     });
 
-    const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
-    const thumbnailFileName = projectsAlreadyExits.thumbnailPath.split('/')[3];
+    if (process.env.NODE_ENV !== 'develop') {
+      const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
+      const thumbnailFileName =
+        projectsAlreadyExits.thumbnailPath.split('/')[3];
 
-    await this.awsS3Service.removeFile(gifFilename);
-    await this.awsS3Service.removeFile(thumbnailFileName);
+      await this.awsS3Service.removeFile(gifFilename);
+      await this.awsS3Service.removeFile(thumbnailFileName);
+    }
 
     await this.prismaService.project.delete({
       where: {

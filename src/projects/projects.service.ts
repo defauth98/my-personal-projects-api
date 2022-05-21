@@ -9,8 +9,8 @@ export class ProjectsService {
 
   async create(
     createProjectDto: CreateProjectDto,
-    thumbnailPath: string,
-    gifPath: string,
+    thumbnailPath?: string,
+    gifPath?: string,
   ) {
     const project = await this.prismaService.project.create({
       data: {
@@ -24,6 +24,12 @@ export class ProjectsService {
   }
 
   async listAll() {
+    const projects = await this.prismaService.project.findMany();
+
+    return projects;
+  }
+
+  async listAllVisibleProjects() {
     const projects = await this.prismaService.project.findMany({
       where: {
         hidden: false,
