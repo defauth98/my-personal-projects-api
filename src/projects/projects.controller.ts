@@ -133,30 +133,30 @@ export class ProjectsController {
       };
     }
 
-    if (process.env.NODE_ENV !== 'develop') {
-      const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
-      if (files.gif && files.gif[0].originalname !== gifFilename) {
+    const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
+    if (files.gif && files.gif[0].originalname !== gifFilename) {
+      if (gifFilename && gifFilename.length)
         await this.awsS3Service.removeFile(gifFilename);
-        await this.awsS3Service.uploadFile(
-          files.gif[0].buffer,
-          files.gif[0].originalname,
-        );
-        updateProjectDTO.gifPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.gif[0].originalname}`;
-      }
 
-      const thumbnailFileName =
-        projectsAlreadyExits.thumbnailPath.split('/')[3];
-      if (
-        files.thumbnail &&
-        files.thumbnail[0].originalname !== thumbnailFileName
-      ) {
+      await this.awsS3Service.uploadFile(
+        files.gif[0].buffer,
+        files.gif[0].originalname,
+      );
+      updateProjectDTO.gifPath = `https://d1hx83ee0ymv6l.cldoudfront.net/${files.gif[0].originalname}`;
+    }
+
+    const thumbnailFileName = projectsAlreadyExits.thumbnailPath.split('/')[3];
+    if (
+      files.thumbnail &&
+      files.thumbnail[0].originalname !== thumbnailFileName
+    ) {
+      if (thumbnailFileName && thumbnailFileName.length)
         await this.awsS3Service.removeFile(thumbnailFileName);
-        await this.awsS3Service.uploadFile(
-          files.thumbnail[0].buffer,
-          files.thumbnail[0].originalname,
-        );
-        updateProjectDTO.thumbnailPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
-      }
+      await this.awsS3Service.uploadFile(
+        files.thumbnail[0].buffer,
+        files.thumbnail[0].originalname,
+      );
+      updateProjectDTO.thumbnailPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
     }
 
     if (updateProjectDTO.hidden) {
