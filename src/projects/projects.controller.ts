@@ -9,6 +9,7 @@ import {
   Param,
   Put,
   Delete,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -49,43 +50,45 @@ export class ProjectsController {
     });
 
     if (projectsAlreadyExits) {
-      return {
-        message: 'this project already exits',
-      };
+      throw new BadRequestException('this project already exists');
     }
 
-    if (process.env.NODE_ENV !== 'develop') {
-      if (!files.gif || !files.thumbnail) {
-        return {
-          message: 'You must provide the thumbnail and gif',
-        };
+    try {
+      if (process.env.NODE_ENV !== 'develop') {
+        if (!files.gif || !files.thumbnail) {
+          throw new BadRequestException(
+            'You must provide the thumbnail and gif',
+          );
+        }
+
+        await this.awsS3Service.uploadFile(
+          files.thumbnail[0].buffer,
+          files.thumbnail[0].originalname,
+        );
+
+        await this.awsS3Service.uploadFile(
+          files.gif[0].buffer,
+          files.gif[0].originalname,
+        );
+
+        const thumbnailLink = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
+        const gifLink = `https://d1hx83ee0ymv6l.cloudfront.net/${files.gif[0].originalname}`;
+
+        return await this.projectsService.create(
+          createProjectDto,
+          thumbnailLink,
+          gifLink,
+        );
       }
-
-      await this.awsS3Service.uploadFile(
-        files.thumbnail[0].buffer,
-        files.thumbnail[0].originalname,
-      );
-
-      await this.awsS3Service.uploadFile(
-        files.gif[0].buffer,
-        files.gif[0].originalname,
-      );
-
-      const thumbnailLink = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
-      const gifLink = `https://d1hx83ee0ymv6l.cloudfront.net/${files.gif[0].originalname}`;
 
       return await this.projectsService.create(
         createProjectDto,
-        thumbnailLink,
-        gifLink,
+        'https://defauth98.github.io.',
+        'https://defauth98.github.io./',
       );
+    } catch (error) {
+      throw new BadRequestException('Erro ao criar o projeto');
     }
-
-    return await this.projectsService.create(
-      createProjectDto,
-      'https://defauth98.github.io.',
-      'https://defauth98.github.io./',
-    );
   }
 
   @Get()
@@ -128,43 +131,46 @@ export class ProjectsController {
     });
 
     if (!projectsAlreadyExits) {
-      return {
-        message: 'this project does not exist',
-      };
+      throw new BadRequestException('this project does not exit');
     }
 
-    const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
-    if (files.gif && files.gif[0].originalname !== gifFilename) {
-      if (gifFilename && gifFilename.length)
-        await this.awsS3Service.removeFile(gifFilename);
+    try {
+      const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
+      if (files.gif && files.gif[0].originalname !== gifFilename) {
+        if (gifFilename && gifFilename.length)
+          await this.awsS3Service.removeFile(gifFilename);
 
-      await this.awsS3Service.uploadFile(
-        files.gif[0].buffer,
-        files.gif[0].originalname,
-      );
-      updateProjectDTO.gifPath = `https://d1hx83ee0ymv6l.cldoudfront.net/${files.gif[0].originalname}`;
+        await this.awsS3Service.uploadFile(
+          files.gif[0].buffer,
+          files.gif[0].originalname,
+        );
+        updateProjectDTO.gifPath = `https://d1hx83ee0ymv6l.cldoudfront.net/${files.gif[0].originalname}`;
+      }
+
+      const thumbnailFileName =
+        projectsAlreadyExits.thumbnailPath.split('/')[3];
+      if (
+        files.thumbnail &&
+        files.thumbnail[0].originalname !== thumbnailFileName
+      ) {
+        if (thumbnailFileName && thumbnailFileName.length)
+          await this.awsS3Service.removeFile(thumbnailFileName);
+        await this.awsS3Service.uploadFile(
+          files.thumbnail[0].buffer,
+          files.thumbnail[0].originalname,
+        );
+        updateProjectDTO.thumbnailPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
+      }
+
+      if (updateProjectDTO.hidden) {
+        updateProjectDTO.hidden =
+          String(updateProjectDTO.hidden) === 'true' ? true : false;
+      }
+
+      return this.projectsService.update(updateProjectDTO, projectId);
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
-
-    const thumbnailFileName = projectsAlreadyExits.thumbnailPath.split('/')[3];
-    if (
-      files.thumbnail &&
-      files.thumbnail[0].originalname !== thumbnailFileName
-    ) {
-      if (thumbnailFileName && thumbnailFileName.length)
-        await this.awsS3Service.removeFile(thumbnailFileName);
-      await this.awsS3Service.uploadFile(
-        files.thumbnail[0].buffer,
-        files.thumbnail[0].originalname,
-      );
-      updateProjectDTO.thumbnailPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
-    }
-
-    if (updateProjectDTO.hidden) {
-      updateProjectDTO.hidden =
-        String(updateProjectDTO.hidden) === 'true' ? true : false;
-    }
-
-    return this.projectsService.update(updateProjectDTO, projectId);
   }
 
   @Delete(':id')
@@ -177,23 +183,27 @@ export class ProjectsController {
       },
     });
 
-    if (process.env.NODE_ENV !== 'develop') {
-      const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
-      const thumbnailFileName =
-        projectsAlreadyExits.thumbnailPath.split('/')[3];
+    try {
+      if (process.env.NODE_ENV !== 'develop') {
+        const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
+        const thumbnailFileName =
+          projectsAlreadyExits.thumbnailPath.split('/')[3];
 
-      await this.awsS3Service.removeFile(gifFilename);
-      await this.awsS3Service.removeFile(thumbnailFileName);
+        await this.awsS3Service.removeFile(gifFilename);
+        await this.awsS3Service.removeFile(thumbnailFileName);
+      }
+
+      await this.prismaService.project.delete({
+        where: {
+          id: projectId,
+        },
+      });
+
+      return {
+        message: 'project deleted',
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
-
-    await this.prismaService.project.delete({
-      where: {
-        id: projectId,
-      },
-    });
-
-    return {
-      message: 'project deleted',
-    };
   }
 }
