@@ -17,6 +17,9 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateProjectDTO } from './dto/update-project-dto';
+import { ProjectNotFoundException } from 'src/exceptions/ProjectNotFound.exception';
+import { ProjectAlreadyExistsException } from 'src/exceptions/ProjectAlreadyExists.exception';
+import { MissingGitAndThumbnailException } from 'src/exceptions/MissingGitAndThumbnail.exception';
 
 @Controller('projects')
 @UseGuards(AuthGuard)
@@ -49,16 +52,12 @@ export class ProjectsController {
     });
 
     if (projectsAlreadyExits) {
-      return {
-        message: 'this project already exits',
-      };
+      throw new ProjectAlreadyExistsException();
     }
 
     if (process.env.NODE_ENV !== 'develop') {
       if (!files.gif || !files.thumbnail) {
-        return {
-          message: 'You must provide the thumbnail and gif',
-        };
+        throw new MissingGitAndThumbnailException();
       }
 
       await this.awsS3Service.uploadFile(
@@ -95,7 +94,13 @@ export class ProjectsController {
 
   @Get(':id')
   async getProjectByID(@Param('id') id: string) {
-    return await this.projectsService.geyById(Number(id));
+    const project = await this.projectsService.geyById(Number(id));
+
+    if (!project) {
+      throw new ProjectNotFoundException();
+    }
+
+    return project;
   }
 
   @Get('/visible')
@@ -128,9 +133,7 @@ export class ProjectsController {
     });
 
     if (!projectsAlreadyExits) {
-      return {
-        message: 'this project does not exist',
-      };
+      throw new ProjectNotFoundException();
     }
 
     const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
@@ -176,6 +179,10 @@ export class ProjectsController {
         id: Number(projectId),
       },
     });
+
+    if (!projectsAlreadyExits) {
+      throw new ProjectNotFoundException();
+    }
 
     if (process.env.NODE_ENV !== 'develop') {
       const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
