@@ -19,8 +19,6 @@ import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateProjectDTO } from './dto/update-project-dto';
 import { ProjectNotFoundException } from 'src/exceptions/ProjectNotFound.exception';
-import { ProjectAlreadyExistsException } from 'src/exceptions/ProjectAlreadyExists.exception';
-import { MissingGitAndThumbnailException } from 'src/exceptions/MissingGitAndThumbnail.exception';
 
 @Controller('projects')
 @UseGuards(AuthGuard)

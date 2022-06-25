@@ -4,7 +4,6 @@
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-1.0.x"]
-
 }
 
 datasource db {
@@ -18,6 +17,8 @@ model User {
   password_hash String   @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@map("user")
 }
 
 model Project {
@@ -33,6 +34,8 @@ model Project {
   updatedAt      DateTime         @updatedAt
   hidden         Boolean?         @default(false)
   ProjectHasTags ProjectHasTags[]
+
+  @@map("project")
 }
 
 model ProjectHasTags {
@@ -41,10 +44,21 @@ model ProjectHasTags {
   tag_id     Int
   project    Project @relation(fields: [project_id], references: [id])
   tag        Tag     @relation(fields: [tag_id], references: [id])
+
+  @@map("project_has_tags")
 }
 
 model Tag {
   id             Int              @id @default(autoincrement())
   name           String           @unique
   ProjectHasTags ProjectHasTags[]
+
+  @@map("tag")
+}
+
+model refreshToken {
+  id     String @id @default(uuid())
+  userId Int
+
+  @@map("refresh_token")
 }
