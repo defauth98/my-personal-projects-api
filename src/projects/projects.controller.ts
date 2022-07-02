@@ -53,7 +53,7 @@ export class ProjectsController {
     });
 
     if (projectsAlreadyExits) {
-      throw new ProjectNotFoundException();
+      throw new BadRequestException('Project already exists');
     }
 
     try {

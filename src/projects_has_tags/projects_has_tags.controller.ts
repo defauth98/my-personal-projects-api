@@ -45,7 +45,7 @@ export class ProjectsHasTagsController {
     }
 
     const verifyAlreadyExists = await this.projectsHasTagsService.verifyExists(
-      createProjectsHasTagDto.project_id,
+      project_id,
       createProjectsHasTagDto.tag_id,
     );
 
