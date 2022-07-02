@@ -1,10 +1,4 @@
-export class UpdateProjectDTO {
-  name?: string;
-  description?: string;
-  link?: string;
-  repoLink?: string;
-  thumbnailPath?: string;
-  gifPath?: string;
-  hidden?: boolean;
-  faviconLink?: string;
-}
+import { PartialType } from '@nestjs/swagger';
+import { CreateProjectDto } from './create-project.dto';
+
+export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

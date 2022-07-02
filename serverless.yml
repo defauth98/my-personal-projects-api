@@ -18,7 +18,7 @@ provider:
     apiGateway: true
   environment:
     SECRET: ${env:SECRET}
-    DATABASE_URL: ${env:DATABASE_URL_PROD}
+    DATABASE_URL: ${env:DATABASE_URL}
     SALT_ROUNDS: ${env:SALT_ROUNDS}
     MY_AWS_ACCESS_KEY_ID:  ${env:MY_AWS_ACCESS_KEY_ID}
     MY_AWS_SECRET_ACCESS_KEY:  ${env:MY_AWS_SECRET_ACCESS_KEY}

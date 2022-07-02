@@ -1,12 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
+import { Tag } from '../entities/tag.entity';
 
-export class LoginDTO {
+export class CreateTagDto extends Tag {
   @ApiProperty()
   @IsString()
-  email: string;
-
-  @ApiProperty()
-  @IsString()
-  password: string;
+  name: string;
 }

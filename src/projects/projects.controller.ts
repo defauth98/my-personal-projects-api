@@ -17,9 +17,11 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateProjectDTO } from './dto/update-project-dto';
+import { UpdateProjectDto } from './dto/update-project-dto';
 import { ProjectNotFoundException } from 'src/exceptions/ProjectNotFound.exception';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Projects')
 @Controller('projects')
 @UseGuards(AuthGuard)
 export class ProjectsController {
@@ -120,7 +122,7 @@ export class ProjectsController {
   )
   async updateProject(
     @Param('id') id: string,
-    @Body() updateProjectDTO: UpdateProjectDTO,
+    @Body() updateProjectDTO: UpdateProjectDto,
     @UploadedFiles()
     files: {
       thumbnail?: Express.Multer.File[];
