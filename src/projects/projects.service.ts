@@ -39,6 +39,19 @@ export class ProjectsService {
     return projects;
   }
 
+  async verifyExists(id: number) {
+    const projectExists = await this.prismaService.project.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!projectExists) {
+      return false;
+    }
+
+    return true;
+  }
+
   async geyById(id: number) {
     return await this.prismaService.project.findFirst({
       where: {
