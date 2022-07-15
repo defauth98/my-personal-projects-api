@@ -9,7 +9,14 @@ import { TagModule } from './tag/tag.module';
 import { ProjectsHasTagsModule } from './projects_has_tags/projects_has_tags.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ProjectsModule, AwsS3Module, TagModule, ProjectsHasTagsModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    ProjectsModule,
+    AwsS3Module,
+    TagModule,
+    ProjectsHasTagsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
