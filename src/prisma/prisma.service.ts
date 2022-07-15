@@ -15,57 +15,58 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     this.$use(async (params, next) => {
       if (params.model == 'Project') {
         if (params.action === 'findUnique' || params.action === 'findFirst') {
-          params.action = 'findFirst'
-          params.args.where['deleted'] = null
+          params.action = 'findFirst';
+          params.args.where['deleted'] = null;
         }
         if (params.action === 'findMany') {
-          if (params.args.where) {
+          if (params.args && params.args.where) {
             if (params.args.where.deleted == undefined) {
-              params.args.where['deleted'] = null
+              params.args.where['deleted'] = null;
             }
           } else {
-            params.args['where'] = { deleted: null }
+            params.args = {};
+            params.args['where'] = { deleted: null };
           }
         }
       }
-      return next(params)
-    })
-  
+      return next(params);
+    });
+
     this.$use(async (params, next) => {
       if (params.model == 'Project') {
         if (params.action == 'update') {
-          params.action = 'updateMany'
-          params.args.where['deleted'] = null
+          params.action = 'updateMany';
+          params.args.where['deleted'] = null;
         }
         if (params.action == 'updateMany') {
-          if (params.args.where != undefined) {
-            params.args.where['deleted'] = null
+          if (params?.args?.where != undefined) {
+            params.args.where['deleted'] = null;
           } else {
-            params.args['where'] = { deleted: null }
+            params.args = {};
+            params.args['where'] = { deleted: null };
           }
         }
       }
-      return next(params)
-    })
-  
+      return next(params);
+    });
+
     this.$use(async (params, next) => {
       if (params.model == 'Project') {
         if (params.action == 'delete') {
-          params.action = 'update'
-          params.args['data'] = { deleted: new Date() }
+          params.action = 'update';
+          params.args['data'] = { deleted: new Date() };
         }
         if (params.action == 'deleteMany') {
-          params.action = 'updateMany'
+          params.action = 'updateMany';
           if (params.args.data != undefined) {
-            params.args.data['deleted'] = new Date()
+            params.args.data['deleted'] = new Date();
           } else {
-            params.args['data'] = { deleted: new Date() }
+            params.args['data'] = { deleted: new Date() };
           }
         }
       }
-      return next(params)
-    })
-
+      return next(params);
+    });
   }
 
   async enableShutdownHooks(app: INestApplication) {

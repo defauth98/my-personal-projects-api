@@ -17,14 +17,16 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle('My Personal Projects API')
     .setVersion('1.0')
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT || 3333, () => {
-    Logger.verbose( `App Running on localhost:${process.env.PORT || 3333}` )
+    Logger.verbose(`App Running on localhost:${process.env.PORT || 3333}`);
   });
 }
 bootstrap();

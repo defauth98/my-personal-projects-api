@@ -1,20 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
   BadRequestException,
+  Body,
+  Controller,
+  Delete,
   NotFoundException,
+  Param,
   ParseIntPipe,
+  Post,
 } from '@nestjs/common';
-import { ProjectsHasTagsService } from './projects_has_tags.service';
-import { CreateProjectsHasTagDto } from './dto/create-projects_has_tag.dto';
+import { ApiTags } from '@nestjs/swagger';
 import { ProjectsService } from 'src/projects/projects.service';
 import { TagService } from 'src/tag/tag.service';
-import { ApiTags } from '@nestjs/swagger';
+import { CreateProjectsHasTagDto } from './dto/create-projects_has_tag.dto';
+import { ProjectsHasTagsService } from './projects_has_tags.service';
 
 @ApiTags('Projects Tag')
 @Controller('project/:projectId/tag')

@@ -1,26 +1,27 @@
 import {
-  Controller,
-  Post,
+  BadRequestException,
   Body,
-  UseInterceptors,
-  UploadedFiles,
-  UseGuards,
+  Controller,
+  Delete,
   Get,
   Param,
+  Post,
   Put,
-  Delete,
-  BadRequestException,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ProjectsService } from './projects.service';
-import { CreateProjectDto } from './dto/create-project.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateProjectDto } from './dto/update-project-dto';
 import { ProjectNotFoundException } from 'src/exceptions/ProjectNotFound.exception';
-import { ApiTags } from '@nestjs/swagger';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateProjectDto } from './dto/create-project.dto';
+import { UpdateProjectDto } from './dto/update-project-dto';
+import { ProjectsService } from './projects.service';
 
+@ApiBearerAuth()
 @ApiTags('Projects')
 @Controller('projects')
 @UseGuards(AuthGuard)
