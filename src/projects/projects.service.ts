@@ -25,7 +25,7 @@ export class ProjectsService {
 
   async listAll() {
     const projects = await this.prismaService.project.findMany({
-      include: {
+      select: {
         ProjectHasTags: true,
       },
     });
@@ -38,7 +38,7 @@ export class ProjectsService {
       where: {
         hidden: false,
       },
-      include: {
+      select:{
         ProjectHasTags: true
       }
     });
