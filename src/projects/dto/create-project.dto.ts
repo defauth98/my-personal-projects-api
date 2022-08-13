@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 import { IsString } from 'class-validator';
 import { Projects } from '../entities/project.entity';
 
-export class CreateProjectDto extends Projects {
+export class CreateProjectDto implements Projects {
   @ApiProperty()
   @IsString()
   name: string;
@@ -22,4 +23,19 @@ export class CreateProjectDto extends Projects {
   @ApiProperty()
   @IsString()
   faviconLink: string;
+
+  id?: number;
+
+  @ApiProperty()
+  @IsString()
+  thumbnailPath: string;
+
+  @ApiProperty()
+  @IsString()
+  gifPath: string;
+
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  hidden?: boolean;
+  ProjectHasTags?: Prisma.ProjectHasTagsUncheckedCreateNestedManyWithoutProjectInput;
 }

@@ -58,36 +58,7 @@ export class ProjectsController {
     }
 
     try {
-      if (process.env.NODE_ENV !== 'develop') {
-        if (!files.gif || !files.thumbnail) {
-          throw new ProjectNotFoundException();
-        }
-
-        await this.awsS3Service.uploadFile(
-          files.thumbnail[0].buffer,
-          files.thumbnail[0].originalname,
-        );
-
-        await this.awsS3Service.uploadFile(
-          files.gif[0].buffer,
-          files.gif[0].originalname,
-        );
-
-        const thumbnailLink = `${process.env.BASE_CDN_LINK}/${files.thumbnail[0].originalname}`;
-        const gifLink = `${process.env.BASE_CDN_LINK}/${files.gif[0].originalname}`;
-
-        return await this.projectsService.create(
-          createProjectDto,
-          thumbnailLink,
-          gifLink,
-        );
-      }
-
-      return await this.projectsService.create(
-        createProjectDto,
-        'https://defauth98.github.io.',
-        'https://defauth98.github.io./',
-      );
+      return await this.projectsService.create(createProjectDto);
     } catch (error) {
       throw new BadRequestException('Erro ao criar o projeto');
     }

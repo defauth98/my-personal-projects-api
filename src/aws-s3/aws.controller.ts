@@ -4,7 +4,7 @@ import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 
 @ApiBearerAuth()
 @ApiTags('Aws')
-@Controller('aws')
+@Controller('uploadFile')
 export class AwsController {
   constructor(private awsS3Service: AwsS3Service) {}
 
