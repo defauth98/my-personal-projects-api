@@ -73,8 +73,8 @@ export class ProjectsController {
           files.gif[0].originalname,
         );
 
-        const thumbnailLink = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
-        const gifLink = `https://d1hx83ee0ymv6l.cloudfront.net/${files.gif[0].originalname}`;
+        const thumbnailLink = `${process.env.BASE_CDN_LINK}/${files.thumbnail[0].originalname}`;
+        const gifLink = `${process.env.BASE_CDN_LINK}/${files.gif[0].originalname}`;
 
         return await this.projectsService.create(
           createProjectDto,

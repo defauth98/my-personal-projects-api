@@ -26,7 +26,9 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT || 3333, () => {
-    Logger.verbose(`App Running on localhost:${process.env.PORT || 3333}`);
+    Logger.verbose(
+      `App Running on http://localhost:${process.env.PORT || 3333}`,
+    );
   });
 }
 bootstrap();
