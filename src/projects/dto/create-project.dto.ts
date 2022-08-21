@@ -24,8 +24,6 @@ export class CreateProjectDto implements Projects {
   @IsString()
   faviconLink: string;
 
-  id?: number;
-
   @ApiProperty()
   @IsString()
   thumbnailPath: string;
@@ -34,6 +32,7 @@ export class CreateProjectDto implements Projects {
   @IsString()
   gifPath: string;
 
+  id?: number;
   createdAt?: string | Date;
   updatedAt?: string | Date;
   hidden?: boolean;

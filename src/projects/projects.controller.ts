@@ -7,13 +7,10 @@ import {
   Param,
   Post,
   Put,
-  UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 import { ProjectNotFoundException } from 'src/exceptions/ProjectNotFound.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -21,10 +18,10 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project-dto';
 import { ProjectsService } from './projects.service';
 
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @ApiTags('Projects')
 @Controller('projects')
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 export class ProjectsController {
   constructor(
     private readonly projectsService: ProjectsService,
@@ -33,20 +30,7 @@ export class ProjectsController {
   ) {}
 
   @Post()
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'thumbnail', maxCount: 1 },
-      { name: 'gif', maxCount: 1 },
-    ]),
-  )
-  async create(
-    @UploadedFiles()
-    files: {
-      thumbnail?: Express.Multer.File[];
-      gif?: Express.Multer.File[];
-    },
-    @Body() createProjectDto: CreateProjectDto,
-  ) {
+  async create(@Body() createProjectDto: CreateProjectDto) {
     const projectsAlreadyExits = await this.prismaService.project.findFirst({
       where: {
         name: createProjectDto.name,
@@ -60,6 +44,8 @@ export class ProjectsController {
     try {
       return await this.projectsService.create(createProjectDto);
     } catch (error) {
+      console.log(error);
+
       throw new BadRequestException('Erro ao criar o projeto');
     }
   }
@@ -95,11 +81,6 @@ export class ProjectsController {
   async updateProject(
     @Param('id') id: string,
     @Body() updateProjectDTO: UpdateProjectDto,
-    @UploadedFiles()
-    files: {
-      thumbnail?: Express.Multer.File[];
-      gif?: Express.Multer.File[];
-    },
   ) {
     const projectId = Number(id);
 
@@ -114,39 +95,14 @@ export class ProjectsController {
     }
 
     try {
-      const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
-      if (files.gif && files.gif[0].originalname !== gifFilename) {
-        if (gifFilename && gifFilename.length)
-          await this.awsS3Service.removeFile(gifFilename);
-
-        await this.awsS3Service.uploadFile(
-          files.gif[0].buffer,
-          files.gif[0].originalname,
-        );
-        updateProjectDTO.gifPath = `https://d1hx83ee0ymv6l.cldoudfront.net/${files.gif[0].originalname}`;
-      }
-
-      const thumbnailFileName =
-        projectsAlreadyExits.thumbnailPath.split('/')[3];
-      if (
-        files.thumbnail &&
-        files.thumbnail[0].originalname !== thumbnailFileName
-      ) {
-        if (thumbnailFileName && thumbnailFileName.length)
-          await this.awsS3Service.removeFile(thumbnailFileName);
-        await this.awsS3Service.uploadFile(
-          files.thumbnail[0].buffer,
-          files.thumbnail[0].originalname,
-        );
-        updateProjectDTO.thumbnailPath = `https://d1hx83ee0ymv6l.cloudfront.net/${files.thumbnail[0].originalname}`;
-      }
-
       if (updateProjectDTO.hidden) {
         updateProjectDTO.hidden =
           String(updateProjectDTO.hidden) === 'true' ? true : false;
       }
 
-      return this.projectsService.update(updateProjectDTO, projectId);
+      await this.projectsService.update(updateProjectDTO, projectId);
+
+      return { message: 'success' };
     } catch (error) {
       throw new BadRequestException(error.message);
     }

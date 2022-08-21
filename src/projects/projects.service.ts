@@ -7,17 +7,9 @@ import { UpdateProjectDto } from './dto/update-project-dto';
 export class ProjectsService {
   constructor(private prismaService: PrismaService) {}
 
-  async create(
-    createProjectDto: CreateProjectDto,
-    thumbnailPath?: string,
-    gifPath?: string,
-  ) {
+  async create(createProjectDto: CreateProjectDto) {
     const project = await this.prismaService.project.create({
-      data: {
-        ...createProjectDto,
-        thumbnailPath,
-        gifPath,
-      },
+      data: createProjectDto,
     });
 
     return project;
