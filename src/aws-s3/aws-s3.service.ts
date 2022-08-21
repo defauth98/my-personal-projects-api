@@ -28,23 +28,26 @@ export class AwsS3Service {
     return s3Instance.upload(params).promise();
   }
 
-  async getSignedUploadURL() {
+  async getSignedUploadURL(
+    filePrefix: string,
+    fileExtension: string,
+    contentType: string,
+  ) {
     const s3Instance = AwsS3Manager.getInstance();
     const actionId = uuid();
     const expires = 30 * 60; // 30 minutes in seconds
-    const fileExtension = '.jpg';
 
     const s3Params = {
       Bucket: 'personal-projects-images',
-      Key: `${actionId}${fileExtension}`,
-      ContentType: 'image/jpeg',
+      Key: `${filePrefix}-${actionId}${fileExtension}`,
+      ContentType: contentType,
       Expires: expires,
     };
 
     return new Promise((resolve, reject) => {
       resolve({
         url: s3Instance.getSignedUrl('putObject', s3Params),
-        fileName: `${actionId}${fileExtension}`,
+        fileName: `${filePrefix}-${actionId}${fileExtension}`,
       });
     });
   }
