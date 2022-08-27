@@ -1,3 +1,0 @@
-FROM mysql:latest
-EXPOSE 3307:3306
-ENV MYSQL_ROOT_PASSWORD=docker

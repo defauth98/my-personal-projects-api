@@ -1,8 +1,15 @@
-version: "3.0"
 services:
-  mysql:
-    build: .
-    volumes:
-      - /var/lib/mysql
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_PASSWORD: 'docker'
+      MYSQL_ROOT_PASSWORD: 'docker'
     ports:
-      - 3307:3306
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+volumes:
+  my-db:
