@@ -7,6 +7,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { AwsS3Module } from './aws-s3/aws-s3.module';
 import { TagModule } from './tag/tag.module';
 import { ProjectsHasTagsModule } from './projects_has_tags/projects_has_tags.module';
+import { ApiStatusModule } from './api-status/api-status.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProjectsHasTagsModule } from './projects_has_tags/projects_has_tags.mod
     AwsS3Module,
     TagModule,
     ProjectsHasTagsModule,
+    ApiStatusModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -33,7 +33,7 @@ model Project {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   hidden         Boolean?         @default(false)
-  deleted DateTime?
+  deleted        DateTime?
   ProjectHasTags ProjectHasTags[]
 
   @@map("project")
@@ -62,4 +62,11 @@ model refreshToken {
   userId Int
 
   @@map("refresh_token")
+}
+
+model apiStatus {
+  id   Int    @id @default(autoincrement())
+  link String
+
+  @@map("api_status")
 }

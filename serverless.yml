@@ -1,5 +1,4 @@
-service: mppd-api 
-
+service: mppd-api
 
 plugins:
   - serverless-offline
@@ -9,7 +8,7 @@ useDotenv: true
 provider:
   name: aws
   runtime: nodejs14.x
-  profile: "daniel-ribeiro"
+  profile: 'daniel-ribeiro'
   region: sa-east-1
   memorySize: 512
   timeout: 28
@@ -18,12 +17,12 @@ provider:
     apiGateway: true
   environment:
     SECRET: ${env:SECRET}
-    DATABASE_URL: ${env:DATABASE_URL}
+    DATABASE_URL: ${env:DATABASE_URL_PROD}
     SALT_ROUNDS: ${env:SALT_ROUNDS}
-    MY_AWS_ACCESS_KEY_ID:  ${env:MY_AWS_ACCESS_KEY_ID}
-    MY_AWS_SECRET_ACCESS_KEY:  ${env:MY_AWS_SECRET_ACCESS_KEY}
+    MY_AWS_ACCESS_KEY_ID: ${env:MY_AWS_ACCESS_KEY_ID}
+    MY_AWS_SECRET_ACCESS_KEY: ${env:MY_AWS_SECRET_ACCESS_KEY}
     BASE_CDN_LINK: ${env:BASE_CDN_LINK}
-  
+
 functions:
   main:
     handler: dist/serverless.handler
@@ -31,7 +30,7 @@ functions:
       - http:
           method: ANY
           path: /{any+}
-          cors: 
+          cors:
             origins: '*'
 
 package:
