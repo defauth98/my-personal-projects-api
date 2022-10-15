@@ -3,7 +3,7 @@
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-1.1.x", "rhel-openssl-1.0.x"]
+  binaryTargets = ["debian-openssl-1.1.x", "rhel-openssl-1.0.x"]
 }
 
 datasource db {
@@ -16,7 +16,7 @@ model User {
   email         String   @unique
   password_hash String   @unique
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime @default(now()) @updatedAt
 
   @@map("user")
 }
@@ -65,8 +65,9 @@ model refreshToken {
 }
 
 model apiStatus {
-  id   Int    @id @default(autoincrement())
+  id   Int     @id @default(autoincrement())
   link String
+  name String?
 
   @@map("api_status")
 }

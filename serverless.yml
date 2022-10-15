@@ -8,7 +8,6 @@ useDotenv: true
 provider:
   name: aws
   runtime: nodejs14.x
-  profile: 'daniel-ribeiro'
   region: sa-east-1
   memorySize: 512
   timeout: 28
@@ -17,7 +16,7 @@ provider:
     apiGateway: true
   environment:
     SECRET: ${env:SECRET}
-    DATABASE_URL: ${env:DATABASE_URL_PROD}
+    DATABASE_URL: ${env:DATABASE_URL}
     SALT_ROUNDS: ${env:SALT_ROUNDS}
     MY_AWS_ACCESS_KEY_ID: ${env:MY_AWS_ACCESS_KEY_ID}
     MY_AWS_SECRET_ACCESS_KEY: ${env:MY_AWS_SECRET_ACCESS_KEY}
@@ -39,6 +38,8 @@ package:
     - '!**/**'
     - 'dist/**'
     - 'node_modules/**'
+    - '!node_modules/.cache/**'
+    - '!node_modules/@types/**'
     - '!node_modules/.prisma/client/libquery_engine-*'
     - 'node_modules/.prisma/client/libquery_engine-rhel-*'
     - '!node_modules/prisma/libquery_engine-*'

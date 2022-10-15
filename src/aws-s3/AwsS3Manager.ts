@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk';
+import AWS from '@aws-sdk/client-s3';
 
 export default class AwsS3Manager {
   static instance: AWS.S3;
@@ -12,7 +12,6 @@ export default class AwsS3Manager {
           accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
           secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
         },
-        signatureVersion: 'v4',
       });
     }
 

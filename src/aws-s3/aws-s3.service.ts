@@ -11,7 +11,7 @@ export class AwsS3Service {
       Bucket: 'personal-projects-images',
     };
 
-    const result = await s3Instance.listObjectsV2(params).promise();
+    const result = await s3Instance.listObjectsV2(params);
 
     return result.Contents.map((item) => item.Key);
   }
@@ -25,7 +25,7 @@ export class AwsS3Service {
       Body: fileContent,
     };
 
-    return s3Instance.upload(params).promise();
+    return s3Instance.putObject(params);
   }
 
   async getSignedUploadURL(
@@ -44,15 +44,20 @@ export class AwsS3Service {
       Expires: expires,
     };
 
-    return new Promise((resolve, reject) => {
-      resolve({
-        url: s3Instance.getSignedUrl('putObject', s3Params),
-        fileName: `${filePrefix}-${actionId}${fileExtension}`,
-      });
-    });
+    // TODO: add implementation: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/modules/_aws_sdk_s3_request_presigner.html
+    return {
+      work: false,
+    };
+
+    // return new Promise((resolve, _reject) => {
+    //   resolve({
+    //     url: s3Instance.getSignedUrl('putObject', s3Params),
+    //     fileName: `${filePrefix}-${actionId}${fileExtension}`,
+    //   });
+    // });
   }
 
-  async removeFile(fileName) {
+  async removeFile(fileName: string) {
     const s3Instance = AwsS3Manager.getInstance();
 
     const params = {
@@ -60,6 +65,6 @@ export class AwsS3Service {
       Key: fileName,
     };
 
-    await s3Instance.deleteObject(params).promise();
+    await s3Instance.deleteObject(params);
   }
 }

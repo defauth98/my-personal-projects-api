@@ -13,7 +13,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 import { ProjectNotFoundException } from 'src/exceptions/ProjectNotFound.exception';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project-dto';
 import { ProjectsService } from './projects.service';

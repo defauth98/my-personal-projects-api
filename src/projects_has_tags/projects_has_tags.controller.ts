@@ -9,8 +9,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ProjectsService } from 'src/projects/projects.service';
-import { TagService } from 'src/tag/tag.service';
+import { ProjectsService } from '../projects/projects.service';
+import { TagService } from '../tag/tag.service';
 import { CreateProjectsHasTagDto } from './dto/create-projects_has_tag.dto';
 import { ProjectsHasTagsService } from './projects_has_tags.service';
 
