@@ -30,7 +30,7 @@ export class AwsS3Service {
   async getSignedUploadURL(projectName: string, fileExtension: string) {
     const client = this.getS3();
 
-    const key = projectName + uuidV4() + fileExtension;
+    const key = `${projectName}-${uuidV4()}${fileExtension}`
 
     const url = await getSignedUrl(
       client,

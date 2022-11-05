@@ -12,11 +12,11 @@ class AWSUploadDTO {
 
 @ApiBearerAuth()
 @ApiTags('Aws')
-@Controller('uploadFile')
+@Controller('')
 export class AwsController {
   constructor(private awsS3Service: AwsS3Service) {}
 
-  @Post()
+  @Post('uploadFile')
   async uploadProjectFile(@Query() params: AWSUploadDTO) {
     const filetypeDictionary = {
       png: {
@@ -39,7 +39,7 @@ export class AwsController {
     );
   }
 
-  @Get('/list')
+  @Get('/listS3Files')
   async list() {
     return this.awsS3Service.listFiles();
   }
