@@ -7,7 +7,7 @@ class AWSUploadDTO {
   filetype: string;
 
   @ApiProperty()
-  filePrefix: string;
+  projectName: string;
 }
 
 @ApiBearerAuth()
@@ -17,19 +17,13 @@ export class AwsController {
   constructor(private awsS3Service: AwsS3Service) {}
 
   @Post()
-  async uploadFile(@Query() params: AWSUploadDTO) {
+  async uploadProjectFile(@Query() params: AWSUploadDTO) {
     const filetypeDictionary = {
-      jpg: {
-        fileExtension: '.jpg',
-        contentType: 'image/jpg',
-      },
       png: {
         fileExtension: '.png',
-        contentType: 'image/png',
       },
       gif: {
         fileExtension: '.gif',
-        contentType: 'image/gif',
       },
     };
 
@@ -40,7 +34,7 @@ export class AwsController {
     }
 
     return this.awsS3Service.getSignedUploadURL(
-      params.filePrefix,
+      params.projectName,
       fileConfig.fileExtension,
     );
   }

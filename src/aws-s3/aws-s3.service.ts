@@ -4,9 +4,10 @@ import {
   DeleteObjectCommand,
   ListObjectsV2Command,
   PutObjectCommand,
-  S3Client,
+  S3Client
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { v4 as uuidV4 } from 'uuid';
 
 @Injectable()
 export class AwsS3Service {
@@ -26,10 +27,10 @@ export class AwsS3Service {
     return this.s3Client;
   }
 
-  async getSignedUploadURL(filePrefix: string, fileExtension: string) {
+  async getSignedUploadURL(projectName: string, fileExtension: string) {
     const client = this.getS3();
 
-    const key = filePrefix + fileExtension;
+    const key = projectName + uuidV4() + fileExtension;
 
     const url = await getSignedUrl(
       client,
