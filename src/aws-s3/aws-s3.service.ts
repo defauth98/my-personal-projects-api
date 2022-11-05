@@ -46,7 +46,7 @@ export class AwsS3Service {
 
   async removeFile(fileName: string) {
     const params = {
-      Bucket: process.env.MY_AWS_S3_BUCKET,
+       Bucket: 'personal-projects-images',
       Key: fileName,
     };
 

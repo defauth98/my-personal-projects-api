@@ -6,10 +6,8 @@ import {
   Get,
   Param,
   Post,
-  Put,
-  UseInterceptors,
+  Put
 } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 import { ProjectNotFoundException } from 'src/exceptions/ProjectNotFound.exception';
@@ -28,6 +26,11 @@ export class ProjectsController {
     private awsS3Service: AwsS3Service,
     private prismaService: PrismaService,
   ) {}
+
+  @Get('visible')
+  async getAllVisiblesProjects() {
+    return this.projectsService.listAllVisibleProjects()
+  }
 
   @Post()
   async create(@Body() createProjectDto: CreateProjectDto) {
@@ -66,18 +69,9 @@ export class ProjectsController {
     return project;
   }
 
-  @Get('/visible')
-  async getAllVisiblesProjects() {
-    return await this.projectsService.listAllVisibleProjects();
-  }
+  
 
   @Put(':id')
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'thumbnail', maxCount: 1 },
-      { name: 'gif', maxCount: 1 },
-    ]),
-  )
   async updateProject(
     @Param('id') id: string,
     @Body() updateProjectDTO: UpdateProjectDto,
@@ -123,14 +117,12 @@ export class ProjectsController {
     }
 
     try {
-      if (process.env.NODE_ENV !== 'develop') {
-        const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
-        const thumbnailFileName =
-          projectsAlreadyExits.thumbnailPath.split('/')[3];
+      const gifFilename = projectsAlreadyExits.gifPath.split('/')[3];
+      const thumbnailFileName =
+        projectsAlreadyExits.thumbnailPath.split('/')[3];
 
-        await this.awsS3Service.removeFile(gifFilename);
-        await this.awsS3Service.removeFile(thumbnailFileName);
-      }
+      await this.awsS3Service.removeFile(gifFilename);
+      await this.awsS3Service.removeFile(thumbnailFileName);
 
       await this.prismaService.project.delete({
         where: {
