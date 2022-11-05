@@ -1,70 +1,75 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import AwsS3Manager from './AwsS3Manager';
+
+import {
+  DeleteObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class AwsS3Service {
-  async listFiles() {
-    const s3Instance = AwsS3Manager.getInstance();
+  s3Client: S3Client = null;
 
-    const params = {
-      Bucket: 'personal-projects-images',
-    };
+  getS3() {
+    if (!this.s3Client) {
+      this.s3Client = new S3Client({
+        credentials: {
+          accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
+          secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
+        },
+        region: String(process.env.AWS_REGION),
+      });
+    }
 
-    const result = await s3Instance.listObjectsV2(params);
-
-    return result.Contents.map((item) => item.Key);
+    return this.s3Client;
   }
 
-  async uploadFile(fileContent, fileName) {
-    const s3Instance = AwsS3Manager.getInstance();
+  async getSignedUploadURL(filePrefix: string, fileExtension: string) {
+    const client = this.getS3();
 
-    const params = {
-      Bucket: 'personal-projects-images',
-      Key: fileName,
-      Body: fileContent,
-    };
+    const key = filePrefix + fileExtension;
 
-    return s3Instance.putObject(params);
-  }
+    const url = await getSignedUrl(
+      client,
+      new PutObjectCommand({
+        Key: key,
+        Bucket: 'personal-projects-images',
+      }),
+      { expiresIn: 300 },
+    );
 
-  async getSignedUploadURL(
-    filePrefix: string,
-    fileExtension: string,
-    contentType: string,
-  ) {
-    const s3Instance = AwsS3Manager.getInstance();
-    const actionId = uuid();
-    const expires = 30 * 60; // 30 minutes in seconds
-
-    const s3Params = {
-      Bucket: 'personal-projects-images',
-      Key: `${filePrefix}-${actionId}${fileExtension}`,
-      ContentType: contentType,
-      Expires: expires,
-    };
-
-    // TODO: add implementation: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/modules/_aws_sdk_s3_request_presigner.html
-    return {
-      work: false,
-    };
-
-    // return new Promise((resolve, _reject) => {
-    //   resolve({
-    //     url: s3Instance.getSignedUrl('putObject', s3Params),
-    //     fileName: `${filePrefix}-${actionId}${fileExtension}`,
-    //   });
-    // });
+    return { url, filePath: key };
   }
 
   async removeFile(fileName: string) {
-    const s3Instance = AwsS3Manager.getInstance();
-
     const params = {
       Bucket: process.env.MY_AWS_S3_BUCKET,
       Key: fileName,
     };
 
-    await s3Instance.deleteObject(params);
+    const client = this.getS3();
+
+    await client.send(new DeleteObjectCommand(params));
+  }
+
+  async listFiles() {
+    const params = {
+      Bucket: 'personal-projects-images',
+    };
+
+    const client = this.getS3();
+
+    const files = await client.send(new ListObjectsV2Command(params));
+
+    return {
+      values: files.Contents.map((file) => {
+        return {
+          key: file.Key,
+          length: file.Size,
+        };
+      }),
+    };
   }
 }
